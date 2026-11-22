@@ -5,15 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prdbuilder.dto.PRDRequest;
 import com.prdbuilder.dto.PRDResponse;
 import com.prdbuilder.util.PromptBuilder;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class PRDService {
 
     private final AIClient aiClient;
     private final ObjectMapper objectMapper;
+
+    public PRDService(AIClient aiClient, ObjectMapper objectMapper) {
+        this.aiClient = aiClient;
+        this.objectMapper = objectMapper;
+    }
 
     public PRDResponse generatePRD(PRDRequest request) {
         // Phase 2: return mockResponse();

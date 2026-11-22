@@ -1,9 +1,7 @@
 package com.prdbuilder.dto;
 
-import lombok.Data;
 import java.util.List;
 
-@Data
 public class PRDResponse {
     private String problemStatement;
     private List<String> targetUsers;
@@ -16,4 +14,94 @@ public class PRDResponse {
     private List<String> databaseSchema;
     private List<String> wireframeIdeas;
     private List<SprintTask> sprintPlan;
+
+    public PRDResponse() {}
+
+    public String getProblemStatement() {
+        return problemStatement;
+    }
+
+    public void setProblemStatement(String problemStatement) {
+        this.problemStatement = problemStatement;
+    }
+
+    public List<String> getTargetUsers() {
+        return targetUsers;
+    }
+
+    public void setTargetUsers(List<String> targetUsers) {
+        this.targetUsers = targetUsers;
+    }
+
+    public List<Persona> getPersonas() {
+        return personas;
+    }
+
+    public void setPersonas(List<Persona> personas) {
+        this.personas = personas;
+    }
+
+    public List<String> getUserStories() {
+        return userStories;
+    }
+
+    public void setUserStories(List<String> userStories) {
+        this.userStories = userStories;
+    }
+
+    public List<String> getAcceptanceCriteria() {
+        return acceptanceCriteria;
+    }
+
+    public void setAcceptanceCriteria(List<String> acceptanceCriteria) {
+        this.acceptanceCriteria = acceptanceCriteria;
+    }
+
+    public List<String> getMvpFeatures() {
+        return mvpFeatures;
+    }
+
+    public void setMvpFeatures(List<String> mvpFeatures) {
+        this.mvpFeatures = mvpFeatures;
+    }
+
+    public List<String> getFutureFeatures() {
+        return futureFeatures;
+    }
+
+    public void setFutureFeatures(List<String> futureFeatures) {
+        this.futureFeatures = futureFeatures;
+    }
+
+    public List<String> getSuggestedApis() {
+        return suggestedApis;
+    }
+
+    public void setSuggestedApis(List<String> suggestedApis) {
+        this.suggestedApis = suggestedApis;
+    }
+
+    public List<String> getDatabaseSchema() {
+        return databaseSchema;
+    }
+
+    public void setDatabaseSchema(List<String> databaseSchema) {
+        this.databaseSchema = databaseSchema;
+    }
+
+    public List<String> getWireframeIdeas() {
+        return wireframeIdeas;
+    }
+
+    public void setWireframeIdeas(List<String> wireframeIdeas) {
+        this.wireframeIdeas = wireframeIdeas;
+    }
+
+    public List<SprintTask> getSprintPlan() {
+        return sprintPlan;
+    }
+
+    public void setSprintPlan(List<SprintTask> sprintPlan) {
+        this.sprintPlan = sprintPlan;
+    }
 }
