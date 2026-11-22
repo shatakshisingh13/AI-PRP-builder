@@ -64,3 +64,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+@media print {
+  nav, .no-print, button, .toaster {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .card, div {
+    break-inside: avoid;
+  }
+}

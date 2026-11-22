@@ -1,5 +1,6 @@
 package com.prdbuilder.controller;
 
+import com.prdbuilder.dto.PRDRefineRequest;
 import com.prdbuilder.dto.PRDRequest;
 import com.prdbuilder.dto.PRDResponse;
 import com.prdbuilder.service.PRDService;
@@ -29,6 +30,12 @@ public class PRDController {
     @PostMapping("/api/prd/generate")
     public ResponseEntity<PRDResponse> generatePRD(@RequestBody PRDRequest request) {
         PRDResponse response = prdService.generatePRD(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/api/prd/refine")
+    public ResponseEntity<PRDResponse> refinePRD(@RequestBody PRDRefineRequest request) {
+        PRDResponse response = prdService.refinePRD(request);
         return ResponseEntity.ok(response);
     }
 }

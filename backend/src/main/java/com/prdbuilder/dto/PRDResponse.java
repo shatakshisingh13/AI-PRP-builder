@@ -3,6 +3,7 @@ package com.prdbuilder.dto;
 import java.util.List;
 
 public class PRDResponse {
+    private int version = 1;
     private String problemStatement;
     private List<String> targetUsers;
     private List<Persona> personas;
@@ -16,8 +17,18 @@ public class PRDResponse {
     private List<SprintTask> sprintPlan;
     private SuccessMetrics successMetrics;
     private List<RiskItem> risksAndMitigations;
+    private List<PRDChangeLogItem> changeLog;
+    private List<PeerFeedback> feedbackHistory;
 
     public PRDResponse() {}
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
 
     public String getProblemStatement() {
         return problemStatement;
@@ -121,5 +132,21 @@ public class PRDResponse {
 
     public void setRisksAndMitigations(List<RiskItem> risksAndMitigations) {
         this.risksAndMitigations = risksAndMitigations;
+    }
+
+    public List<PRDChangeLogItem> getChangeLog() {
+        return changeLog;
+    }
+
+    public void setChangeLog(List<PRDChangeLogItem> changeLog) {
+        this.changeLog = changeLog;
+    }
+
+    public List<PeerFeedback> getFeedbackHistory() {
+        return feedbackHistory;
+    }
+
+    public void setFeedbackHistory(List<PeerFeedback> feedbackHistory) {
+        this.feedbackHistory = feedbackHistory;
     }
 }

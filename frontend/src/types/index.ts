@@ -22,7 +22,22 @@ export interface RiskItem {
   mitigation: string;
 }
 
+export interface PRDChangeLogItem {
+  section: string;
+  changeDescription: string;
+  reason: string;
+}
+
+export interface PeerFeedback {
+  reviewerRole: string;
+  rating: number;
+  missingRequirements: string[];
+  feedbackNotes: string;
+  timestamp: string;
+}
+
 export interface PRDResponse {
+  version?: number;
   problemStatement: string;
   targetUsers: string[];
   personas: Persona[];
@@ -36,4 +51,6 @@ export interface PRDResponse {
   sprintPlan: SprintTask[];
   successMetrics?: SuccessMetrics;
   risksAndMitigations?: RiskItem[];
+  changeLog?: PRDChangeLogItem[];
+  feedbackHistory?: PeerFeedback[];
 }

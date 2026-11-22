@@ -1,6 +1,7 @@
 import { PRDResponse } from '../types';
 
 export const mockPRDResponse: PRDResponse = {
+  version: 1,
   problemStatement: "College students often struggle to find affordable, late-night food options that deliver directly to their dorms. Existing platforms have high delivery fees and don't cater specifically to campus geography or student budgets.",
   targetUsers: [
     "Undergraduate students living in dorms",

@@ -2,10 +2,17 @@ package com.prdbuilder.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prdbuilder.dto.PeerFeedback;
+import com.prdbuilder.dto.PRDRefineRequest;
 import com.prdbuilder.dto.PRDRequest;
 import com.prdbuilder.dto.PRDResponse;
 import com.prdbuilder.util.PromptBuilder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class PRDService {
@@ -19,9 +26,6 @@ public class PRDService {
     }
 
     public PRDResponse generatePRD(PRDRequest request) {
-        // Phase 2: return mockResponse();
-        // Phase 3: AI implementation
-        
         String prompt = PromptBuilder.buildPrompt(request.getIdea());
         System.out.println("Calling AI Provider...");
         String aiResponseJson = aiClient.generatePRD(prompt);
@@ -40,9 +44,46 @@ public class PRDService {
         }
     }
 
+    public PRDResponse refinePRD(PRDRefineRequest request) {
+        try {
+            String currentPrdJson = objectMapper.writeValueAsString(request.getCurrentPrd());
+            String prompt = PromptBuilder.buildRefinePrompt(currentPrdJson, request);
+            
+            System.out.println("Calling AI Provider for PRD Refinement...");
+            String aiResponseJson = aiClient.generatePRD(prompt);
+            System.out.println("Raw AI Refined Response: " + aiResponseJson);
+            
+            aiResponseJson = aiResponseJson.trim();
+            if (aiResponseJson.startsWith("```json")) aiResponseJson = aiResponseJson.substring(7).trim();
+            else if (aiResponseJson.startsWith("```")) aiResponseJson = aiResponseJson.substring(3).trim();
+            if (aiResponseJson.endsWith("```")) aiResponseJson = aiResponseJson.substring(0, aiResponseJson.length() - 3).trim();
+            
+            PRDResponse refinedPrd = objectMapper.readValue(aiResponseJson, PRDResponse.class);
+            
+            // Maintain feedback history
+            List<PeerFeedback> history = request.getCurrentPrd() != null && request.getCurrentPrd().getFeedbackHistory() != null
+                    ? new ArrayList<>(request.getCurrentPrd().getFeedbackHistory())
+                    : new ArrayList<>();
+            
+            history.add(new PeerFeedback(
+                request.getReviewerRole(),
+                request.getRating(),
+                request.getMissingRequirements(),
+                request.getFeedbackNotes(),
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm"))
+            ));
+            refinedPrd.setFeedbackHistory(history);
+            
+            return refinedPrd;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to process PRD refinement JSON", e);
+        }
+    }
+
     private String mockResponse() {
         return """
                {
+                 "version": 1,
                  "problemStatement": "College students struggle to find affordable late-night food.",
                  "targetUsers": ["Undergraduate students"],
                  "personas": [{"name": "Late-Night Larry", "description": "Student", "goal": "Find food", "painPoints": ["Everything is closed"]}],
