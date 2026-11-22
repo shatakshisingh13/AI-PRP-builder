@@ -10,6 +10,18 @@ export interface SprintTask {
   tasks: string[];
 }
 
+export interface SuccessMetrics {
+  northStar: string;
+  primaryKpis: string[];
+  guardrailMetrics: string[];
+}
+
+export interface RiskItem {
+  risk: string;
+  impact: string;
+  mitigation: string;
+}
+
 export interface PRDResponse {
   problemStatement: string;
   targetUsers: string[];
@@ -22,4 +34,6 @@ export interface PRDResponse {
   databaseSchema: string[];
   wireframeIdeas: string[];
   sprintPlan: SprintTask[];
+  successMetrics?: SuccessMetrics;
+  risksAndMitigations?: RiskItem[];
 }

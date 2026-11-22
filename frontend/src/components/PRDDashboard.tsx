@@ -1,7 +1,22 @@
 import React from 'react';
 import { PRDResponse } from '../types';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
-import { Users, Target, CheckSquare, Zap, Rocket, Server, Database, Layout, Clock, FileText } from 'lucide-react';
+import { 
+  Users, 
+  Target, 
+  CheckSquare, 
+  Zap, 
+  Rocket, 
+  Server, 
+  Database, 
+  Layout, 
+  Clock, 
+  FileText, 
+  TrendingUp, 
+  Compass, 
+  ShieldCheck, 
+  ShieldAlert 
+} from 'lucide-react';
 
 interface PRDDashboardProps {
   data: PRDResponse;
@@ -10,6 +25,7 @@ interface PRDDashboardProps {
 export const PRDDashboard: React.FC<PRDDashboardProps> = ({ data }) => {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Problem Statement */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -18,10 +34,65 @@ export const PRDDashboard: React.FC<PRDDashboardProps> = ({ data }) => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">{data.problemStatement}</p>
+          <p className="text-muted-foreground leading-relaxed">{data.problemStatement}</p>
         </CardContent>
       </Card>
 
+      {/* Success Metrics & KPIs (New PM Section) */}
+      {data.successMetrics && (
+        <Card className="border-primary/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              Success Metrics & KPIs
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* North Star Highlight */}
+            {data.successMetrics.northStar && (
+              <div className="p-4 rounded-xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 flex items-start gap-3">
+                <Compass className="w-6 h-6 text-primary shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-xs uppercase tracking-wider font-bold text-primary">North Star Metric</span>
+                  <p className="text-base font-semibold mt-0.5 text-foreground">{data.successMetrics.northStar}</p>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Primary KPIs */}
+              {data.successMetrics.primaryKpis && data.successMetrics.primaryKpis.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-sm flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-emerald-500" /> Primary KPIs
+                  </h4>
+                  <ul className="list-disc pl-5 space-y-1.5 text-sm text-muted-foreground">
+                    {data.successMetrics.primaryKpis.map((kpi, i) => (
+                      <li key={i}>{kpi}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Guardrail Metrics */}
+              {data.successMetrics.guardrailMetrics && data.successMetrics.guardrailMetrics.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-sm flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-blue-500" /> Guardrail Metrics
+                  </h4>
+                  <ul className="list-disc pl-5 space-y-1.5 text-sm text-muted-foreground">
+                    {data.successMetrics.guardrailMetrics.map((gm, i) => (
+                      <li key={i}>{gm}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Target Users & Personas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <Card>
           <CardHeader>
@@ -68,6 +139,7 @@ export const PRDDashboard: React.FC<PRDDashboardProps> = ({ data }) => {
         </Card>
       </div>
 
+      {/* User Stories */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -84,6 +156,7 @@ export const PRDDashboard: React.FC<PRDDashboardProps> = ({ data }) => {
         </CardContent>
       </Card>
 
+      {/* Acceptance Criteria */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -100,6 +173,7 @@ export const PRDDashboard: React.FC<PRDDashboardProps> = ({ data }) => {
         </CardContent>
       </Card>
 
+      {/* MVP Features & Future Features */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <Card>
           <CardHeader>
@@ -134,6 +208,46 @@ export const PRDDashboard: React.FC<PRDDashboardProps> = ({ data }) => {
         </Card>
       </div>
 
+      {/* Risks & Pre-Mortem Analysis (New PM Section) */}
+      {data.risksAndMitigations && data.risksAndMitigations.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <ShieldAlert className="w-5 h-5 text-amber-500" />
+              Risks & Pre-Mortem Mitigations
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {data.risksAndMitigations.map((item, i) => {
+              const impactColor = 
+                item.impact?.toLowerCase() === 'high' ? 'bg-red-500/10 text-red-600 border-red-500/20' :
+                item.impact?.toLowerCase() === 'medium' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
+                'bg-blue-500/10 text-blue-600 border-blue-500/20';
+
+              return (
+                <div key={i} className="p-4 rounded-xl border bg-muted/30 space-y-3 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <span className="font-semibold text-foreground text-sm">{item.risk}</span>
+                      {item.impact && (
+                        <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium border shrink-0 ${impactColor}`}>
+                          {item.impact} Risk
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-background border text-xs text-muted-foreground">
+                    <strong className="text-foreground block mb-0.5">Mitigation:</strong>
+                    {item.mitigation}
+                  </div>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Suggested APIs & Database Schema */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <Card>
           <CardHeader>
@@ -166,6 +280,7 @@ export const PRDDashboard: React.FC<PRDDashboardProps> = ({ data }) => {
         </Card>
       </div>
 
+      {/* Wireframe Ideas & Sprint Plan */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <Card>
           <CardHeader>

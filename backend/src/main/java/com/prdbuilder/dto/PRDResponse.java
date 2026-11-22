@@ -14,6 +14,8 @@ public class PRDResponse {
     private List<String> databaseSchema;
     private List<String> wireframeIdeas;
     private List<SprintTask> sprintPlan;
+    private SuccessMetrics successMetrics;
+    private List<RiskItem> risksAndMitigations;
 
     public PRDResponse() {}
 
@@ -103,5 +105,21 @@ public class PRDResponse {
 
     public void setSprintPlan(List<SprintTask> sprintPlan) {
         this.sprintPlan = sprintPlan;
+    }
+
+    public SuccessMetrics getSuccessMetrics() {
+        return successMetrics;
+    }
+
+    public void setSuccessMetrics(SuccessMetrics successMetrics) {
+        this.successMetrics = successMetrics;
+    }
+
+    public List<RiskItem> getRisksAndMitigations() {
+        return risksAndMitigations;
+    }
+
+    public void setRisksAndMitigations(List<RiskItem> risksAndMitigations) {
+        this.risksAndMitigations = risksAndMitigations;
     }
 }

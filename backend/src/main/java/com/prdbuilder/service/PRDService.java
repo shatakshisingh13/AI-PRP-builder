@@ -53,7 +53,19 @@ public class PRDService {
                  "suggestedApis": ["Stripe API", "Google Maps API"],
                  "databaseSchema": ["User (id, name, email)"],
                  "wireframeIdeas": ["Home Screen: Search bar, categories"],
-                 "sprintPlan": [{"week": "Week 1", "tasks": ["Database setup"]}]
+                 "sprintPlan": [{"week": "Week 1", "tasks": ["Database setup"]}],
+                 "successMetrics": {
+                   "northStar": "Weekly completed late-night orders delivered in < 25 mins",
+                   "primaryKpis": ["Order conversion rate > 18%", "30-day user retention > 35%"],
+                   "guardrailMetrics": ["Order cancellation rate < 2.5%", "Driver incident reports < 0.1%"]
+                 },
+                 "risksAndMitigations": [
+                   {
+                     "risk": "Low restaurant supply after 1 AM",
+                     "impact": "High",
+                     "mitigation": "Partner with 24/7 cloud kitchens and provide guaranteed order volume stipends."
+                   }
+                 ]
                }
                """;
     }

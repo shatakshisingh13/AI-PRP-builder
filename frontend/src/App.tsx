@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Sparkles, Moon, Sun, Loader2, Copy, Download, FileJson } from 'lucide-react';
+import { useState } from 'react';
+import { Sparkles, Moon, Sun, Loader2, Copy, Download, FileJson, ListTodo } from 'lucide-react';
 import { PRDDashboard } from './components/PRDDashboard';
 import { PRDResponse } from './types';
 import axios from 'axios';
@@ -29,9 +29,10 @@ function App() {
       });
       setPrdData(response.data);
       toast.success('PRD generated successfully!');
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error('Failed to generate PRD. The server might be down or AI API failed.');
+      const serverMessage = error.response?.data?.message;
+      toast.error(serverMessage || 'Failed to generate PRD. The server might be down or AI API failed.');
     } finally {
       setIsGenerating(false);
     }
@@ -55,12 +56,62 @@ function App() {
     toast.success('Downloaded JSON');
   };
 
+  const exportJiraCsv = () => {
+    if (!prdData) return;
+    const rows: string[] = [
+      ['Issue Type', 'Summary', 'Description', 'Sprint / Week', 'Acceptance Criteria'].map(h => `"${h}"`).join(',')
+    ];
+
+    // Add user stories as Story issues
+    prdData.userStories.forEach((story, idx) => {
+      const summary = story.length > 80 ? story.substring(0, 77) + '...' : story;
+      const desc = story.replace(/"/g, '""');
+      const sprint = prdData.sprintPlan[idx % prdData.sprintPlan.length]?.week || 'Backlog';
+      const ac = (prdData.acceptanceCriteria || []).join('; ').replace(/"/g, '""');
+      rows.push(`"Story","${summary.replace(/"/g, '""')}","${desc}","${sprint}","${ac}"`);
+    });
+
+    // Add sprint tasks as Task issues
+    prdData.sprintPlan.forEach(sprint => {
+      sprint.tasks.forEach(task => {
+        rows.push(`"Task","${task.replace(/"/g, '""')}","Part of ${sprint.week} engineering deliverables","${sprint.week}",""`);
+      });
+    });
+
+    const csvContent = rows.join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'jira_linear_backlog.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Exported Jira / Linear Backlog CSV');
+  };
+
   const downloadMarkdown = () => {
     if (!prdData) return;
     
     let md = `# Product Requirements Document\n\n`;
     md += `## Problem Statement\n${prdData.problemStatement}\n\n`;
     
+    if (prdData.successMetrics) {
+      md += `## Success Metrics & KPIs\n`;
+      if (prdData.successMetrics.northStar) {
+        md += `**North Star Metric:** ${prdData.successMetrics.northStar}\n\n`;
+      }
+      if (prdData.successMetrics.primaryKpis && prdData.successMetrics.primaryKpis.length > 0) {
+        md += `### Primary KPIs\n`;
+        prdData.successMetrics.primaryKpis.forEach(kpi => md += `- ${kpi}\n`);
+        md += `\n`;
+      }
+      if (prdData.successMetrics.guardrailMetrics && prdData.successMetrics.guardrailMetrics.length > 0) {
+        md += `### Guardrail Metrics\n`;
+        prdData.successMetrics.guardrailMetrics.forEach(gm => md += `- ${gm}\n`);
+        md += `\n`;
+      }
+    }
+
     md += `## Target Users\n`;
     prdData.targetUsers.forEach(u => md += `- ${u}\n`);
     md += `\n`;
@@ -72,9 +123,47 @@ function App() {
     });
     md += `\n`;
 
+    md += `## User Stories\n`;
+    prdData.userStories.forEach(s => md += `- ${s}\n`);
+    md += `\n`;
+
+    md += `## Acceptance Criteria\n`;
+    prdData.acceptanceCriteria.forEach(ac => md += `- ${ac}\n`);
+    md += `\n`;
+
     md += `## MVP Features\n`;
     prdData.mvpFeatures.forEach(f => md += `- ${f}\n`);
     md += `\n`;
+
+    md += `## Future Features\n`;
+    prdData.futureFeatures.forEach(f => md += `- ${f}\n`);
+    md += `\n`;
+
+    if (prdData.risksAndMitigations && prdData.risksAndMitigations.length > 0) {
+      md += `## Risks & Pre-Mortem Mitigations\n`;
+      prdData.risksAndMitigations.forEach(r => {
+        md += `### ${r.risk} (Impact: ${r.impact})\n`;
+        md += `- **Mitigation Strategy:** ${r.mitigation}\n\n`;
+      });
+    }
+
+    md += `## Suggested Technical APIs\n`;
+    prdData.suggestedApis.forEach(api => md += `- ${api}\n`);
+    md += `\n`;
+
+    md += `## Database Schema\n\`\`\`sql\n`;
+    md += prdData.databaseSchema.join('\n\n');
+    md += `\n\`\`\`\n\n`;
+
+    md += `## Wireframe Ideas\n`;
+    prdData.wireframeIdeas.forEach(w => md += `${w}\n\n`);
+
+    md += `## Sprint Delivery Plan\n`;
+    prdData.sprintPlan.forEach(s => {
+      md += `### ${s.week}\n`;
+      s.tasks.forEach(t => md += `- ${t}\n`);
+      md += `\n`;
+    });
     
     const blob = new Blob([md], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
@@ -113,7 +202,7 @@ function App() {
             Turn your <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600">product idea</span> into a complete PRD in seconds.
           </h1>
           <p className="text-lg text-muted-foreground">
-            Describe your idea and our AI Product Manager will generate a structured Product Requirements Document instantly.
+            Describe your idea and our AI Product Manager will generate a structured Product Requirements Document with metrics, risks, and sprint plans instantly.
           </p>
 
           <div className="bg-card border rounded-2xl shadow-sm p-2 flex flex-col focus-within:ring-2 focus-within:ring-primary/20 transition-all text-left">
@@ -158,9 +247,15 @@ function App() {
 
         {prdData && (
           <section className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold">Your Generated PRD</h2>
-              <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+              <div>
+                <h2 className="text-2xl font-bold">Your Generated PRD</h2>
+                <p className="text-sm text-muted-foreground">Comprehensive specification ready for engineering handoff</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={exportJiraCsv} className="p-2 rounded-lg border bg-card hover:bg-muted transition-colors flex items-center gap-2 text-sm font-medium" title="Export to Jira / Linear">
+                  <ListTodo className="w-4 h-4 text-primary" /> Jira / Linear CSV
+                </button>
                 <button onClick={copyToClipboard} className="p-2 rounded-lg border bg-card hover:bg-muted transition-colors flex items-center gap-2 text-sm" title="Copy JSON">
                   <Copy className="w-4 h-4" /> Copy
                 </button>

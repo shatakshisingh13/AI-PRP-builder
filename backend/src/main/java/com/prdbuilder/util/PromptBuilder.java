@@ -4,8 +4,8 @@ public class PromptBuilder {
 
     public static String buildPrompt(String idea) {
         return """
-               Act as a Senior Product Manager.
-               Generate a complete Product Requirements Document (PRD) for the following idea:
+               Act as a Principal Product Manager.
+               Generate a comprehensive, production-ready Product Requirements Document (PRD) for the following idea:
                "%s"
                
                Return ONLY valid JSON matching the following structure:
@@ -24,6 +24,14 @@ public class PromptBuilder {
                    "wireframeIdeas": [],
                    "sprintPlan": [
                        {"week": "", "tasks": []}
+                   ],
+                   "successMetrics": {
+                       "northStar": "",
+                       "primaryKpis": [],
+                       "guardrailMetrics": []
+                   },
+                   "risksAndMitigations": [
+                       {"risk": "", "impact": "High | Medium | Low", "mitigation": ""}
                    ]
                }
                
